@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static",
-      "vercel-build": "npm run build && npm run build-storybook"
+    "build-storybook": "storybook build",
+      "vercel-build": "npm run build && npm run build-storybook",
+      "clean": "npx rimraf storybook-static node_modules/.cache",
+      "deploy-storybook":"storybook-to-ghpages"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
