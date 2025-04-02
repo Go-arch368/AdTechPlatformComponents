@@ -5,7 +5,21 @@ const config: NextConfig = {
     return [
       {
         source: "/storybook/:path*",
-        destination: "/storybook-static/:path*", // serves the built Storybook files
+        destination: "/storybook-static/:path*", // serves Storybook from the static directory
+      },
+    ];
+  },
+  // Optionally, add public directory for assets if required
+  async headers() {
+    return [
+      {
+        source: "/storybook-static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable", // cache Storybook assets for a long time
+          },
+        ],
       },
     ];
   },
