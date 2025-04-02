@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static"
+    "build-storybook": "storybook build -o storybook-static",
+      "vercel-build": "npm run build && npm run build-storybook"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

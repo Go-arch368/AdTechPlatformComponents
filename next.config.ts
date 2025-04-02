@@ -1,7 +1,14 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const config: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/storybook/:path*",
+        destination: "/storybook-static/:path*", // serves the built Storybook files
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+export default config;
