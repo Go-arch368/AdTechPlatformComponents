@@ -12,10 +12,14 @@ const config: StorybookConfig = {
     "@storybook/experimental-addon-test",
     "@storybook/addon-viewport"
   ],
+  core: {
+    builder: 'webpack5',
+  },
   "framework": {
     "name": "@storybook/nextjs",
     "options": {}
   },
   staticDirs: ['../public'], 
+  
 };
 export default config;
