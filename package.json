@@ -11,7 +11,8 @@
     "build-storybook": "storybook build",
       "vercel-build": "npm run build && npm run build-storybook",
       "clean": "npx rimraf storybook-static node_modules/.cache",
-      "deploy-storybook":"storybook-to-ghpages"
+      "deploy-storybook":"storybook-to-ghpages --existing-output-dir=storybook-static --ci"
+
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
