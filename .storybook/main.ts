@@ -13,7 +13,7 @@ const config: StorybookConfig = {
     "@storybook/addon-viewport",
     "@chromatic-com/storybook",
     '@storybook/addon-a11y',
-    
+    'storybook-addon-themes'
   ],
   framework: {
     name: "@storybook/nextjs",

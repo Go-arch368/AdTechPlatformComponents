@@ -1,11 +1,12 @@
-import type { Preview } from '@storybook/react'
+import { ModeDecorator } from "./modeDecorator";
 import "../app/globals.css";
-const preview: Preview = {
+export const decorators = [ModeDecorator];
+const preview = {
   parameters: {
     controls: {
       matchers: {
-       color: /(background|color)$/i,
-       date: /Date$/i,
+        color: /(background|color)$/i,
+        date: /Date$/i,
       },
     },
   },

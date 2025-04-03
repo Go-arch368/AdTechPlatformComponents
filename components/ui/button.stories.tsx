@@ -1,103 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './button';
-import { Sun, Download, ArrowRight } from 'lucide-react';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Button, ButtonProps } from "./button"; // Assuming your button component is located here
 
-const meta: Meta<typeof Button> = {
-  title: 'Components/Atoms/Button',
+const meta = {
+  title: "Components/Button",
   component: Button,
-  tags: ['autodocs'],
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
-    },
-    size: {
-      control: 'select',
-      options: ['default', 'sm', 'lg', 'icon'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    asChild: {
-      control: 'boolean',
-    },
-  },
-  parameters: {
-    layout: 'centered',
-  },
-  decorators: [
-    (Story) => (
-      <div className="p-4">
-        <Story />
-      </div>
-    ),
-  ],
-};
+} satisfies Meta<typeof Button>;
 
 export default meta;
 
-type Story = StoryObj<typeof Button>;
+type Story = StoryObj<typeof meta>;
 
-const ResponsiveTemplate: Story = {
-  render: (args) => (
-    <Button {...args} className="w-full sm:w-auto" />
-  ),
+export const Default: Story = {
+  render: () => <Button>Default Button</Button>,
 };
-
-const IconTemplate: Story = {
-  render: (args) => (
-    <Button {...args} className="w-full sm:w-auto">
-      {args.children}
-    </Button>
-  ),
-};
-
-
-export const Default = {
-  ...ResponsiveTemplate,
-  args: {
-    variant: 'default',
-    children: 'Default Button',
-  },
-};
-
-export const Destructive = {
-  ...ResponsiveTemplate,
-  args: {
-    variant: 'destructive',
-    children: 'Destructive Button',
-  },
-};
-
-export const Outline = {
-  ...ResponsiveTemplate,
-  args: {
-    variant: 'outline',
-    children: 'Outline Button',
-  },
-};
-
-export const Secondary = {
-  ...ResponsiveTemplate,
-  args: {
-    variant: 'secondary',
-    children: 'Secondary Button',
-  },
-};
-
-export const Ghost = {
-  ...ResponsiveTemplate,
-  args: {
-    variant: 'ghost',
-    children: 'Ghost Button',
-  },
-};
-
-export const Link = {
-  ...ResponsiveTemplate,
-  args: {
-    variant: 'link',
-    children: 'Link Button',
-  },
-};
-
