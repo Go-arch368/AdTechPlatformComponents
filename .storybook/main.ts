@@ -25,7 +25,11 @@ const config: StorybookConfig = {
   },
   core: {
     builder: 'webpack5'
-  }
+  },
+  babel: async (options) => ({
+    ...options,
+    presets: [...(options.presets || []), "@babel/preset-react"], 
+  }),
 };
 
 export default config;
