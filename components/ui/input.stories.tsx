@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, userEvent, within } from "@storybook/test";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-const meta: Meta = {
+const meta: Meta<typeof TextInputComponent> = {
   title: "Components/ui/input",
   tags: ["autodocs"],
   argTypes: {
@@ -30,7 +31,6 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-
 const TextInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "default" | "sm" | "lg" }) => (
   <div className="grid w-full max-w-sm items-center gap-1.5">
     <Label htmlFor="text-input">Username</Label>
@@ -43,7 +43,6 @@ const TextInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "de
     />
   </div>
 );
-
 
 const PasswordInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "default" | "sm" | "lg" }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -72,23 +71,6 @@ const PasswordInputComponent = ({ disabled, size }: { disabled?: boolean; size?:
   );
 };
 
-
-const NumberInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "default" | "sm" | "lg" }) => (
-  <div className="grid w-full max-w-sm items-center gap-1.5">
-    <Label htmlFor="number-input">Age</Label>
-    <Input
-      type="number"
-      id="number-input"
-      placeholder="Enter your age"
-      min="0"
-      max="120"
-      disabled={disabled}
-      className={size === "sm" ? "h-8" : size === "lg" ? "h-10" : ""}
-    />
-  </div>
-);
-
-// Date Input Component
 const DateInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "default" | "sm" | "lg" }) => {
   const [date, setDate] = useState<Date>();
   return (
@@ -110,7 +92,7 @@ const DateInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "de
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
-          <Calendar
+          <DatePickerCalendar
             mode="single"
             selected={date}
             onSelect={setDate}
@@ -123,19 +105,43 @@ const DateInputComponent = ({ disabled, size }: { disabled?: boolean; size?: "de
   );
 };
 
-// Stories
+// Stories with test interactions
 export const Text: Story = {
   render: (args) => <TextInputComponent {...args} />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText("Enter your username");
+
+    await expect(input).toBeInTheDocument();
+    await userEvent.type(input, "testuser");
+    await expect(input).toHaveValue("testuser");
+
+    if (args.disabled) {
+      await expect(input).toBeDisabled();
+    } else {
+      await expect(input).toBeEnabled();
+    }
+  },
 };
 
 export const Password: Story = {
   render: (args) => <PasswordInputComponent {...args} />,
-};
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText("Enter your password");
+    const toggleButton = canvas.getByRole("button", { name: "Show" });
 
-export const Number: Story = {
-  render: (args) => <NumberInputComponent {...args} />,
-};
+    await expect(input).toHaveAttribute("type", "password");
+    await userEvent.click(toggleButton);
+    await expect(input).toHaveAttribute("type", "text");
+    await expect(canvas.getByText("Hide")).toBeInTheDocument();
 
-export const Date: Story = {
-  render: (args) => <DateInputComponent {...args} />,
+    await userEvent.type(input, "secret123");
+    await expect(input).toHaveValue("secret123");
+
+    if (args.disabled) {
+      await expect(input).toBeDisabled();
+      await expect(toggleButton).toBeDisabled();
+    }
+  },
 };

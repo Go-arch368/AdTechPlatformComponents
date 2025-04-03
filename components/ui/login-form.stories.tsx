@@ -8,7 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
-
+import { expect, userEvent, within, waitFor, fn } from '@storybook/test';
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -27,16 +27,15 @@ const meta: Meta = {
       control: { type: "select" },
       options: ["default", "compact"],
     },
-    onSubmit: { action: "submitted" },
   },
   args: {
     variant: "default",
+    onSubmit: fn(),
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
 
 const LoginForm = ({ variant, onSubmit }: { variant?: "default" | "compact"; onSubmit?: (data: any) => void }) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -96,7 +95,12 @@ const LoginForm = ({ variant, onSubmit }: { variant?: "default" | "compact"; onS
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" size={variant === "compact" ? "sm" : "default"}>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              size={variant === "compact" ? "sm" : "default"}
+              data-testid="submit-button"
+            >
               Sign In
             </Button>
           </form>
@@ -109,6 +113,26 @@ const LoginForm = ({ variant, onSubmit }: { variant?: "default" | "compact"; onS
 // Stories
 export const Default: Story = { 
   render: (args) => <LoginForm {...args} />,
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const user = userEvent.setup();
+
+    await expect(canvas.getByText('Login to your account')).toBeInTheDocument();
+    await expect(canvas.getByLabelText('Username')).toBeInTheDocument();
+    await expect(canvas.getByLabelText('Password')).toBeInTheDocument();
+    await expect(canvas.getByTestId('submit-button')).toBeInTheDocument();
+
+    await user.type(canvas.getByLabelText('Username'), 'testuser');
+    await user.type(canvas.getByLabelText('Password'), 'securepassword123');
+    await user.click(canvas.getByTestId('submit-button'));
+
+    await waitFor(() => {
+      expect(args.onSubmit).toHaveBeenCalledWith({
+        username: 'testuser',
+        password: 'securepassword123'
+      });
+    });
+  },
 };
 
 export const Compact: Story = {
@@ -116,47 +140,70 @@ export const Compact: Story = {
     variant: "compact",
   },
   render: (args) => <LoginForm {...args} />,
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const user = userEvent.setup();
+
+    const usernameInput = canvas.getByLabelText('Username');
+    const passwordInput = canvas.getByLabelText('Password');
+    const submitButton = canvas.getByTestId('submit-button');
+
+    await expect(usernameInput).toHaveClass('h-9');
+    await expect(passwordInput).toHaveClass('h-9');
+    await expect(submitButton).toHaveClass('h-9'); // Check compact button size
+
+    await user.type(usernameInput, 'compactuser');
+    await user.type(passwordInput, 'compactpass123');
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(args.onSubmit).toHaveBeenCalledWith({
+        username: 'compactuser',
+        password: 'compactpass123'
+      });
+    });
+  },
 };
 
 export const WithValidation: Story = {
   render: (args) => <LoginForm {...args} />,
-  parameters: {
-    docs: {
-      description: {
-        story: "This version shows form validation in action. Try submitting with empty fields.",
-      },
-    },
-  },
-};
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const user = userEvent.setup();
 
-export const ResponsiveLogin: Story = {
-  render: (args) => (
-    <div className="flex justify-center p-4">
-      <LoginForm {...args} />
-    </div>
-  ),
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
-    },
+    // Submit empty form
+    await user.click(canvas.getByTestId('submit-button'));
+    
+    // Wait for validation messages
+    await waitFor(() => {
+      expect(canvas.getByText(/Username must be at least 2 characters./i)).toBeInTheDocument();
+      expect(canvas.getByText(/Password must be at least 6 characters./i)).toBeInTheDocument();
+    });
+
+    // Test partial validation
+    await user.type(canvas.getByLabelText('Username'), 'a');
+    await user.click(canvas.getByTestId('submit-button'));
+    await expect(canvas.getByText(/Username must be at least 2 characters./i)).toBeInTheDocument();
+
+    await user.type(canvas.getByLabelText('Username'), 'b'); // "ab" (valid)
+    await user.type(canvas.getByLabelText('Password'), 'short');
+    await user.click(canvas.getByTestId('submit-button'));
+    await expect(canvas.queryByText(/Username must be at least 2 characters./i)).not.toBeInTheDocument();
+    await expect(canvas.getByText(/Password must be at least 6 characters./i)).toBeInTheDocument();
   },
 };
 
 export const LoadingState: Story = {
   render: (args) => {
+    const [isLoading, setIsLoading] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      defaultValues: {
-        username: "",
-        password: "",
-      },
+      defaultValues: { username: "", password: "" },
     });
-
-    const [isLoading, setIsLoading] = useState(false);
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
       setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       args.onSubmit?.(data);
       setIsLoading(false);
     }
@@ -174,9 +221,13 @@ export const LoadingState: Story = {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Username</Label>
+                    <Label htmlFor="loading-username">Username</Label>
                     <FormControl>
-                      <Input placeholder="username" {...field} />
+                      <Input 
+                        id="loading-username" 
+                        placeholder="username" 
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,15 +238,25 @@ export const LoadingState: Story = {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Password</Label>
+                    <Label htmlFor="loading-password">Password</Label>
                     <FormControl>
-                      <Input type="password" placeholder="password" {...field} />
+                      <Input 
+                        id="loading-password" 
+                        type="password" 
+                        placeholder="password" 
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading}
+                data-testid="loading-button"
+              >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
@@ -203,5 +264,25 @@ export const LoadingState: Story = {
         </CardContent>
       </Card>
     );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const user = userEvent.setup();
+
+    const submitButton = canvas.getByTestId('loading-button');
+    
+    await user.type(canvas.getByLabelText('Username'), 'testuser');
+    await user.type(canvas.getByLabelText('Password'), 'testpass');
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+      expect(submitButton).toHaveTextContent('Signing in...');
+    });
+
+    await waitFor(() => {
+      expect(submitButton).not.toBeDisabled();
+      expect(submitButton).toHaveTextContent('Sign In');
+    }, { timeout: 3000 });
   },
 };
