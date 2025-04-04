@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./button";
-import { ArrowRight, Download, Sun } from "lucide-react";
+import { userEvent, within, expect, fn } from '@storybook/test';
 
-const meta = {
+const meta: Meta<typeof Button> = {
   title: "Components/Atoms/Button",
   component: Button,
   tags: ['autodocs'],
@@ -22,26 +22,35 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof Button>;
+};
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/* ---------- Base Templates ---------- */
+
 const ResponsiveTemplate: Story = {
   render: (args) => (
-    <div className="w-[300px] sm:w-auto"> {/* Constrained on mobile, auto on desktop */}
-      <Button {...args} className="w-full sm:w-auto" /> {/* Responsive width */}
+    <div className="w-[300px] sm:w-auto">
+      <Button {...args} className="w-full sm:w-auto" />
     </div>
   ),
 };
 
-/* ---------- Variant Stories ---------- */
+
 export const Default: Story = {
   ...ResponsiveTemplate,
   args: {
     children: 'Default Button',
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Default Button' });
+    
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
+    await expect(button).toBeEnabled();
   },
 };
 
@@ -50,6 +59,16 @@ export const Primary: Story = {
   args: {
     variant: 'default',
     children: 'Primary Button',
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Primary Button' });
+
+    await userEvent.hover(button);
+    await new Promise((r) => setTimeout(r, 200)); 
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
   },
 };
 
@@ -58,6 +77,17 @@ export const Destructive: Story = {
   args: {
     variant: 'destructive',
     children: 'Destructive Button',
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Destructive Button' });
+
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
+  },
+  parameters: {
+    chromatic: { delay: 500 }, 
   },
 };
 
@@ -66,6 +96,17 @@ export const Outline: Story = {
   args: {
     variant: 'outline',
     children: 'Outline Button',
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Outline Button' });
+
+    await userEvent.click(button); 
+    await expect(button).toHaveFocus(); 
+
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
   },
 };
 
@@ -74,6 +115,15 @@ export const Ghost: Story = {
   args: {
     variant: 'ghost',
     children: 'Ghost Button',
+    onClick: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Ghost Button' });
+
+    await userEvent.hover(button);
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
   },
 };
 
@@ -82,83 +132,13 @@ export const Link: Story = {
   args: {
     variant: 'link',
     children: 'Link Button',
+    onClick: fn(),
   },
-};
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Link Button' });
 
-
-export const Small: Story = {
-  args: {
-    size: 'sm',
-    children: 'Small Button',
-    className: 'w-full sm:w-auto',
-  },
-};
-
-export const Large: Story = {
-  args: {
-    size: 'lg',
-    children: 'Large Button',
-    className: 'w-full sm:w-auto',
-  },
-};
-
-export const IconButton: Story = {
-  args: {
-    size: 'icon',
-    children: <Sun className="size-4" />,
-  },
-};
-
-
-export const Disabled: Story = {
-  ...ResponsiveTemplate,
-  args: {
-    disabled: true,
-    children: 'Disabled Button',
-  },
-};
-
-
-export const WithIcon: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4 w-[300px] sm:w-auto">
-      <Button className="w-full sm:w-auto">
-        <Download className="mr-2 size-4" />
-        Download
-      </Button>
-      <Button variant="outline" className="w-full sm:w-auto">
-        Continue <ArrowRight className="ml-2 size-4" />
-      </Button>
-    </div>
-  ),
-};
-
-
-export const DarkModeComparison = {
-  render: () => (
-    <div className="space-y-8">
-      <div className="light p-6 rounded-lg bg-background">
-        <h3 className="mb-4 text-sm font-medium">Light Mode</h3>
-        <div className="flex flex-wrap gap-3">
-          <Button>Default</Button>
-          <Button variant="default">Primary</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="outline">Outline</Button>
-        </div>
-      </div>
-      
-      <div className="dark p-6 rounded-lg bg-background">
-        <h3 className="mb-4 text-sm font-medium">Dark Mode</h3>
-        <div className="flex flex-wrap gap-3">
-          <Button>Default</Button>
-          <Button variant="default">Primary</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="outline">Outline</Button>
-        </div>
-      </div>
-    </div>
-  ),
-  parameters: {
-    backgrounds: { default: 'light' },
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
   },
 };
