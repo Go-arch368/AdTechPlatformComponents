@@ -1,45 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 
-export const ModeDecorator = (Story: any) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+export const ModeDecorator = ({ children, context }) => {
+  const theme = context?.globals?.theme || "light"; // Ensure `context` is not undefined
+  const isDarkMode = theme === "dark";
 
   useEffect(() => {
-    const savedMode = localStorage.getItem('storybook-dark-mode');
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialMode = savedMode ? savedMode === 'true' : systemPrefersDark;
-
-    setIsDarkMode(initialMode);
-    document.documentElement.classList.toggle('dark', initialMode);
-  }, []);
-
-  const toggleMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem('storybook-dark-mode', String(newMode));
-    document.documentElement.classList.toggle('dark', newMode);
-  };
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   return (
-    <div className={`relative ${isDarkMode ? 'dark' : ''}`}>
-      {/* Toggle Button in top-right corner */}
-      <div className="fixed top-2 right-2 z-[2147483647]">
+    <div className={isDarkMode ? "dark" : ""}>
+      {/* Dark Mode Toggle in Top-Right of Page */}
+      <div className="fixed top-4 right-4 z-50">
         <button
-          onClick={toggleMode}
-          className={`
-            p-2 rounded-full
-            ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}
-            border border-gray-300 dark:border-gray-600
-            shadow hover:shadow-md transition-all
-            flex items-center justify-center
-          `}
-          aria-label="Toggle Dark Mode"
+          onClick={() =>
+            context.globals.update("theme", isDarkMode ? "light" : "dark")
+          }
+          className={`p-2 rounded-full shadow border transition ${
+            isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+          }`}
         >
-          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
       </div>
 
-      <Story />
+      {/* Render Story inside */}
+      {children}
     </div>
   );
 };

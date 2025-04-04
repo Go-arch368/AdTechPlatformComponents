@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 const meta: Meta<typeof Button> = {
   title: "Components/Atoms/Button",
   component: Button,
- // tags: ['autodocs'],
+ tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
