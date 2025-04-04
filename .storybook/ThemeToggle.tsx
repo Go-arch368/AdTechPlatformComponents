@@ -15,7 +15,7 @@ const ThemeWrapper = ({ children }) => {
 
   return (
     <div className="w-full">
-      {/* Toggle button */}
+   
       <div className="fixed top-4 right-4 z-50">
         <button
           onClick={() =>
@@ -38,7 +38,7 @@ const ThemeWrapper = ({ children }) => {
       </div>
 
       
-      <div className="bg-white dark:bg-gray-900 text-black dark:text-white p-6 pt-24 transition-colors ">
+      <div className="bg-white dark:bg-gray-950 text-black dark:text-white p-6 pt-24 transition-colors ">
         {children}
       </div>
     </div>
