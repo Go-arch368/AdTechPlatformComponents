@@ -1,33 +1,45 @@
-// src/decorators/modeDecorator.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
 
 export const ModeDecorator = (Story: any) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  useEffect(() => {
+    const savedMode = localStorage.getItem('storybook-dark-mode');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialMode = savedMode ? savedMode === 'true' : systemPrefersDark;
+
+    setIsDarkMode(initialMode);
+    document.documentElement.classList.toggle('dark', initialMode);
+  }, []);
+
   const toggleMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark", !isDarkMode);
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem('storybook-dark-mode', String(newMode));
+    document.documentElement.classList.toggle('dark', newMode);
   };
 
   return (
-    <>
-      <button
-        onClick={toggleMode}
-        style={{
-          position: "fixed",
-          top: 10,
-          right: 10,
-          zIndex: 9999,
-          padding: "8px 12px",
-          backgroundColor: isDarkMode ? "#333" : "#fff",
-          color: isDarkMode ? "#fff" : "#333",
-          border: "none",
-          borderRadius: "5px",
-        }}
-      >
-        {isDarkMode ? "Light Mode" : "Dark Mode"}
-      </button>
+    <div className={`relative ${isDarkMode ? 'dark' : ''}`}>
+      {/* Toggle Button in top-right corner */}
+      <div className="fixed top-2 right-2 z-[2147483647]">
+        <button
+          onClick={toggleMode}
+          className={`
+            p-2 rounded-full
+            ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}
+            border border-gray-300 dark:border-gray-600
+            shadow hover:shadow-md transition-all
+            flex items-center justify-center
+          `}
+          aria-label="Toggle Dark Mode"
+        >
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
+
       <Story />
-    </>
+    </div>
   );
 };

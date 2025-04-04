@@ -5,7 +5,7 @@ import { userEvent, within, expect } from "@storybook/test";
 const meta: Meta<typeof Input> = {
   title: "Components/Atoms/Input",
   component: Input,
-  tags: ["autodocs"],
+  //tags: ["autodocs"],
   argTypes: {
     type: {
       options: ["text", "email", "password", "number"],

@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./button";
 import { userEvent, within, expect, fn } from '@storybook/test';
+import React, { useEffect, useState } from "react";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Atoms/Button",
   component: Button,
-  tags: ['autodocs'],
+ // tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
@@ -28,15 +29,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
 const ResponsiveTemplate: Story = {
   render: (args) => (
-    <div className="w-[300px] sm:w-auto">
-      <Button {...args} className="w-full sm:w-auto" />
+    <div className="flex no-wrap gap-2">
+      <Button {...args} />
+     
     </div>
   ),
 };
-
 
 export const Default: Story = {
   ...ResponsiveTemplate,
@@ -47,7 +47,7 @@ export const Default: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Default Button' });
-    
+
     await userEvent.click(button);
     await expect(args.onClick).toHaveBeenCalled();
     await expect(button).toBeEnabled();
@@ -66,7 +66,7 @@ export const Primary: Story = {
     const button = canvas.getByRole('button', { name: 'Primary Button' });
 
     await userEvent.hover(button);
-    await new Promise((r) => setTimeout(r, 200)); 
+    await new Promise((r) => setTimeout(r, 200));
     await userEvent.click(button);
     await expect(args.onClick).toHaveBeenCalled();
   },
@@ -87,7 +87,7 @@ export const Destructive: Story = {
     await expect(args.onClick).toHaveBeenCalled();
   },
   parameters: {
-    chromatic: { delay: 500 }, 
+    chromatic: { delay: 500 },
   },
 };
 
@@ -102,10 +102,8 @@ export const Outline: Story = {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button', { name: 'Outline Button' });
 
-    await userEvent.click(button); 
-    await expect(button).toHaveFocus(); 
-
     await userEvent.click(button);
+    await expect(button).toHaveFocus();
     await expect(args.onClick).toHaveBeenCalled();
   },
 };
@@ -142,3 +140,5 @@ export const Link: Story = {
     await expect(args.onClick).toHaveBeenCalled();
   },
 };
+
+  
