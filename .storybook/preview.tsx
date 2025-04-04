@@ -1,15 +1,16 @@
-import "../app/globals.css";
-import React from "react";
-import ThemeWrapper from "./ThemeToggle";
+import "../app/globals.css"
 
-export const decorators = [
-  (Story) => (
-    <ThemeWrapper>
-      <Story />
-    </ThemeWrapper>
-  ),
-];
+import type { Preview } from '@storybook/react'
 
-export const parameters = {
-  layout: "fullscreen",
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+       color: /(background|color)$/i,
+       date: /Date$/i,
+      },
+    },
+  },
 };
+
+export default preview;
