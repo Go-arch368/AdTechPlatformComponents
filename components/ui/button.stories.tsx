@@ -85,7 +85,7 @@ export const Link: Story = {
   },
 };
 
-/* ---------- Size Stories ---------- */
+
 export const Small: Story = {
   args: {
     size: 'sm',
@@ -109,7 +109,7 @@ export const IconButton: Story = {
   },
 };
 
-/* ---------- State Stories ---------- */
+
 export const Disabled: Story = {
   ...ResponsiveTemplate,
   args: {
@@ -118,7 +118,7 @@ export const Disabled: Story = {
   },
 };
 
-/* ---------- Interactive Stories ---------- */
+
 export const WithIcon: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-[300px] sm:w-auto">
@@ -133,7 +133,7 @@ export const WithIcon: Story = {
   ),
 };
 
-/* ---------- Dark Mode Showcase ---------- */
+
 export const DarkModeComparison = {
   render: () => (
     <div className="space-y-8">
