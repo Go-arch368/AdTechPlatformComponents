@@ -29,12 +29,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-// Template without unnecessary wrapper
+
 const Template: Story = {
   render: (args) => <Button {...args} />,
 };
 
-// ✅ Default Button
 export const Default: Story = {
   ...Template,
   args: {
@@ -51,7 +50,7 @@ export const Default: Story = {
   },
 };
 
-// ✅ Primary Button
+
 export const Primary: Story = {
   ...Template,
   args: {
@@ -64,13 +63,13 @@ export const Primary: Story = {
     const button = canvas.getByRole('button', { name: 'Primary Button' });
 
     await userEvent.hover(button);
-    await new Promise((r) => setTimeout(r, 200)); // simulate delay for visual effects
+    await new Promise((r) => setTimeout(r, 200)); 
     await userEvent.click(button);
     await expect(args.onClick).toHaveBeenCalled();
   },
 };
 
-// ✅ Destructive Button
+
 export const Destructive: Story = {
   ...Template,
   args: {
@@ -90,7 +89,7 @@ export const Destructive: Story = {
   },
 };
 
-// ✅ Outline Button
+
 export const Outline: Story = {
   ...Template,
   args: {
@@ -108,7 +107,7 @@ export const Outline: Story = {
   },
 };
 
-// ✅ Ghost Button
+
 export const Ghost: Story = {
   ...Template,
   args: {
@@ -126,7 +125,6 @@ export const Ghost: Story = {
   },
 };
 
-// ✅ Link Button
 export const Link: Story = {
   ...Template,
   args: {
