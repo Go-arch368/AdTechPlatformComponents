@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./button";
-import { userEvent, within, expect, fn } from '@storybook/test';
+import { userEvent, within, expect ,fn } from "@storybook/test";
 
 
 const meta: Meta<typeof Button> = {
   title: "Components/Atoms/Button",
   component: Button,
- tags: ['autodocs'],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
@@ -29,17 +29,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const ResponsiveTemplate: Story = {
-  render: (args) => (
-    <div className="flex no-wrap gap-2">
-      <Button {...args} />
-     
-    </div>
-  ),
+// Template without unnecessary wrapper
+const Template: Story = {
+  render: (args) => <Button {...args} />,
 };
 
+// ✅ Default Button
 export const Default: Story = {
-  ...ResponsiveTemplate,
+  ...Template,
   args: {
     children: 'Default Button',
     onClick: fn(),
@@ -54,8 +51,9 @@ export const Default: Story = {
   },
 };
 
+// ✅ Primary Button
 export const Primary: Story = {
-  ...ResponsiveTemplate,
+  ...Template,
   args: {
     variant: 'default',
     children: 'Primary Button',
@@ -66,14 +64,15 @@ export const Primary: Story = {
     const button = canvas.getByRole('button', { name: 'Primary Button' });
 
     await userEvent.hover(button);
-    await new Promise((r) => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 200)); // simulate delay for visual effects
     await userEvent.click(button);
     await expect(args.onClick).toHaveBeenCalled();
   },
 };
 
+// ✅ Destructive Button
 export const Destructive: Story = {
-  ...ResponsiveTemplate,
+  ...Template,
   args: {
     variant: 'destructive',
     children: 'Destructive Button',
@@ -91,8 +90,9 @@ export const Destructive: Story = {
   },
 };
 
+// ✅ Outline Button
 export const Outline: Story = {
-  ...ResponsiveTemplate,
+  ...Template,
   args: {
     variant: 'outline',
     children: 'Outline Button',
@@ -108,8 +108,9 @@ export const Outline: Story = {
   },
 };
 
+// ✅ Ghost Button
 export const Ghost: Story = {
-  ...ResponsiveTemplate,
+  ...Template,
   args: {
     variant: 'ghost',
     children: 'Ghost Button',
@@ -125,8 +126,9 @@ export const Ghost: Story = {
   },
 };
 
+// ✅ Link Button
 export const Link: Story = {
-  ...ResponsiveTemplate,
+  ...Template,
   args: {
     variant: 'link',
     children: 'Link Button',
@@ -140,5 +142,3 @@ export const Link: Story = {
     await expect(args.onClick).toHaveBeenCalled();
   },
 };
-
-  

@@ -11,15 +11,9 @@ const meta: Meta<typeof Input> = {
       options: ["text", "email", "password", "number"],
       control: { type: "select" },
     },
-    disabled: {
-      control: "boolean",
-    },
-    placeholder: {
-      control: "text",
-    },
-    className: {
-      control: "text",
-    },
+    disabled: { control: "boolean" },
+    placeholder: { control: "text" },
+    className: { control: "text" },
   },
   args: {
     type: "text",
@@ -35,6 +29,7 @@ export default meta;
 
 type Story = StoryObj<typeof Input>;
 
+// ✅ Basic Input
 export const Basic: Story = {
   args: {
     placeholder: "Enter your text...",
@@ -43,6 +38,7 @@ export const Basic: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByPlaceholderText("Enter your text...");
+
     await userEvent.click(input);
     await expect(input).toBeVisible();
     await userEvent.type(input, "Hello World!");
@@ -50,39 +46,39 @@ export const Basic: Story = {
   },
 };
 
+// ✅ All Types (Text, Email, Password, Number)
 export const AllTypes: Story = {
-    render: () => (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-2xl mx-auto">
-        <Input type="text" placeholder="Text input" className="w-full max-w-xs" />
-        <Input type="email" placeholder="Email input" className="w-full max-w-xs" />
-        <Input type="password" placeholder="Password input" className="w-full max-w-xs" />
-        <Input type="number" placeholder="Number input" className="w-full max-w-xs" />
-      </div>
-    ),
-    play: async ({ canvasElement }) => {
-      const canvas = within(canvasElement);
-  
-      const textInput = canvas.getByPlaceholderText("Text input");
-      const emailInput = canvas.getByPlaceholderText("Email input");
-      const passwordInput = canvas.getByPlaceholderText("Password input");
-      const numberInput = canvas.getByPlaceholderText("Number input");
-  
-      await userEvent.type(textInput, "Some text");
-      await expect(textInput).toHaveValue("Some text");
-  
-      await userEvent.type(emailInput, "test@example.com");
-      await expect(emailInput).toHaveValue("test@example.com");
-  
-      await userEvent.type(passwordInput, "password123");
-      await expect(passwordInput).toHaveValue("password123");
-  
-      await userEvent.type(numberInput, "12345");
-      await expect(numberInput).toHaveValue(12345); 
-      
-    },
-  };
-  
+  render: () => (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-2xl mx-auto">
+      <Input type="text" placeholder="Text input" className="w-full max-w-xs" />
+      <Input type="email" placeholder="Email input" className="w-full max-w-xs" />
+      <Input type="password" placeholder="Password input" className="w-full max-w-xs" />
+      <Input type="number" placeholder="Number input" className="w-full max-w-xs" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
 
+    const textInput = canvas.getByPlaceholderText("Text input");
+    const emailInput = canvas.getByPlaceholderText("Email input");
+    const passwordInput = canvas.getByPlaceholderText("Password input");
+    const numberInput = canvas.getByPlaceholderText("Number input");
+
+    await userEvent.type(textInput, "Some text");
+    await expect(textInput).toHaveValue("Some text");
+
+    await userEvent.type(emailInput, "test@example.com");
+    await expect(emailInput).toHaveValue("test@example.com");
+
+    await userEvent.type(passwordInput, "password123");
+    await expect(passwordInput).toHaveValue("password123");
+
+    await userEvent.type(numberInput, "12345");
+    await expect(numberInput).toHaveValue(12345); // number input returns number value
+  },
+};
+
+// ✅ Input With States (Normal, Disabled, Error)
 export const WithStates: Story = {
   render: () => (
     <div className="space-y-4 w-full max-w-sm mx-auto">
@@ -106,6 +102,7 @@ export const WithStates: Story = {
     await expect(normalInput).toHaveFocus();
     await userEvent.type(normalInput, "Test");
     await expect(normalInput).toHaveValue("Test");
+
     await expect(disabledInput).toBeDisabled();
     await expect(errorInput).toHaveAttribute("aria-invalid", "true");
   },
